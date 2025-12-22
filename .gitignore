@@ -24,3 +24,5 @@ bin/
 bootstrap
 function.zip
 .aws-sam/
+
+cover.out

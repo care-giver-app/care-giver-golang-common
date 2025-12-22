@@ -10,12 +10,6 @@ import (
 const (
 	DBPrefix = "Event"
 	ParamID  = "eventId"
-
-	bowelMovementType = "Bowel Movement"
-	medicationType    = "Medication"
-	showerType        = "Shower"
-	urinationType     = "Urination"
-	weightType        = "Weight"
 )
 
 type Entry struct {
@@ -54,16 +48,9 @@ func WithNote(note string) EntryOption {
 }
 
 func NewEntry(receiverID, userID, eventType string, opts ...EntryOption) (*Entry, error) {
-	supportedEventTypes := map[string]bool{
-		bowelMovementType: true,
-		medicationType:    true,
-		showerType:        true,
-		urinationType:     true,
-		weightType:        true,
-	}
-
-	if !supportedEventTypes[eventType] {
-		return nil, fmt.Errorf("unsupported event type: %s", eventType)
+	eventConfig, err := readEventConfig(eventType)
+	if err != nil {
+		return nil, err
 	}
 
 	e := &Entry{
@@ -71,7 +58,7 @@ func NewEntry(receiverID, userID, eventType string, opts ...EntryOption) (*Entry
 		ReceiverID: receiverID,
 		UserID:     userID,
 		Timestamp:  time.Now().UTC().Format(time.RFC3339),
-		Type:       eventType,
+		Type:       eventConfig.Type,
 	}
 
 	for _, opt := range opts {
