@@ -1,6 +1,7 @@
 package event
 
 import (
+	"slices"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -97,4 +98,37 @@ func TestNewEntry(t *testing.T) {
 		})
 	}
 
+}
+
+func TestGetAllConfigs(t *testing.T) {
+	tests := map[string]struct {
+		expectedConfigs []EventConfig
+		expectErr       bool
+	}{
+		"Happy Path": {
+			expectedConfigs: []EventConfig{
+				{
+					Type: "Shower",
+				},
+				{
+					Type: "Weight",
+					Data: DataConfig{
+						Name: "Weight",
+						Unit: "Lb(s)",
+					},
+				},
+			},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			configs, err := GetAllConfigs()
+
+			assert.Nil(t, err)
+			for _, config := range tc.expectedConfigs {
+				assert.True(t, slices.Contains(configs, config))
+			}
+		})
+	}
 }
