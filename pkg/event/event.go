@@ -67,3 +67,7 @@ func NewEntry(receiverID, userID, eventType string, opts ...EntryOption) (*Entry
 
 	return e, nil
 }
+
+func GetAllConfigs() ([]EventConfig, error) {
+	return readConfigs()
+}
