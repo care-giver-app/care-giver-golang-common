@@ -1,3 +1,8 @@
 {
-    "type": "Shower"
+    "type": "Shower",
+    "icon": "assets/shower-icon.png",
+    "color": {
+        "primary": "#1E90FF",
+        "secondary": "#D1E8FF"
+    }
 }

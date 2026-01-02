@@ -1,7 +1,16 @@
 {
     "type": "Weight",
+    "icon": "assets/weight-icon.png",
+    "color": {
+        "primary": "#27AE60",
+        "secondary": "#D4EFDF"
+    },
     "data": {
         "name": "Weight",
-        "unit": "Lb(s)"
+        "unit": "Lbs"
+    },
+    "graph": {
+        "type": "line",
+        "title": "Weight By Time"
     }
 }

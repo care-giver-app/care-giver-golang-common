@@ -1,3 +1,8 @@
 {
-    "type": "Urination"
+    "type": "Urination",
+    "icon": "assets/urination-icon.png",
+    "color": {
+        "primary": "#D4AC0D",
+        "secondary": "#FFF8DC"
+    }
 }
