@@ -16,13 +16,26 @@ const (
 var configs embed.FS
 
 type EventConfig struct {
-	Type string     `json:"type"`
-	Data DataConfig `json:"data,omitempty"`
+	Type  string       `json:"type"`
+	Icon  string       `json:"icon"`
+	Color ColorConfig  `json:"color"`
+	Data  *DataConfig  `json:"data,omitempty"`
+	Graph *GraphConfig `json:"graph,omitempty"`
+}
+
+type ColorConfig struct {
+	Primary   string `json:"primary"`
+	Secondary string `json:"secondary"`
 }
 
 type DataConfig struct {
 	Name string `json:"name"`
 	Unit string `json:"unit"`
+}
+
+type GraphConfig struct {
+	Type  string `json:"type"`
+	Title string `json:"title"`
 }
 
 func readEventConfig(eventType string) (*EventConfig, error) {

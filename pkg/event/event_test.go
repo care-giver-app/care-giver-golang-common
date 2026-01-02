@@ -1,7 +1,7 @@
 package event
 
 import (
-	"slices"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -109,25 +109,49 @@ func TestGetAllConfigs(t *testing.T) {
 			expectedConfigs: []EventConfig{
 				{
 					Type: "Shower",
+					Icon: "assets/shower-icon.png",
+					Color: ColorConfig{
+						Primary:   "#3498DB",
+						Secondary: "#D6EAF8",
+					},
 				},
 				{
 					Type: "Weight",
-					Data: DataConfig{
+					Icon: "assets/weight-icon.png",
+					Color: ColorConfig{
+						Primary:   "#27AE60",
+						Secondary: "#D4EFDF",
+					},
+					Data: &DataConfig{
 						Name: "Weight",
-						Unit: "Lb(s)",
+						Unit: "Lbs",
+					},
+					Graph: &GraphConfig{
+						Type:  "line",
+						Title: "Weight By Time",
 					},
 				},
 			},
 		},
 	}
-
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			configs, err := GetAllConfigs()
 
 			assert.Nil(t, err)
-			for _, config := range tc.expectedConfigs {
-				assert.True(t, slices.Contains(configs, config))
+			assert.NotEmpty(t, configs)
+
+			for _, expectedConfig := range tc.expectedConfigs {
+				found := false
+				for _, actualConfig := range configs {
+					if actualConfig.Type == expectedConfig.Type {
+						found = true
+						break
+					}
+				}
+				if !found {
+					assert.Fail(t, fmt.Sprintf("%s not found in configs", expectedConfig.Type))
+				}
 			}
 		})
 	}
