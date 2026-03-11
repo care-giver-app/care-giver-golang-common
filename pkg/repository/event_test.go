@@ -57,12 +57,14 @@ func TestAddEvent(t *testing.T) {
 func TestGetEvents(t *testing.T) {
 	tests := map[string]struct {
 		rid           string
+		bound         TimestampBound
 		mockDynamo    *dynamo.Mock
 		expectedValue []event.Entry
 		expectError   bool
 	}{
 		"Happy Path - Got Events": {
-			rid: "Receiver#123",
+			rid:   "Receiver#123",
+			bound: TimestampBound{},
 			mockDynamo: &dynamo.Mock{
 				QueryOutput: &dynamodb.QueryOutput{
 					Items: []map[string]types.AttributeValue{
@@ -86,7 +88,8 @@ func TestGetEvents(t *testing.T) {
 			},
 		},
 		"Sad Path - Query Error": {
-			rid: "Error",
+			rid:   "Error",
+			bound: TimestampBound{},
 			mockDynamo: &dynamo.Mock{
 				QueryOutput: nil,
 				Err:         errors.New("An error occured during Query"),
@@ -94,7 +97,8 @@ func TestGetEvents(t *testing.T) {
 			expectError: true,
 		},
 		"Sad Path - Bad Data Error": {
-			rid: "BadData",
+			rid:   "BadData",
+			bound: TimestampBound{},
 			mockDynamo: &dynamo.Mock{
 				QueryOutput: &dynamodb.QueryOutput{
 					Items: []map[string]types.AttributeValue{
@@ -113,7 +117,7 @@ func TestGetEvents(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			testEventRepo := NewEventRespository(context.Background(), "event-table", tc.mockDynamo, zap.NewNop())
 
-			events, err := testEventRepo.GetEvents(tc.rid)
+			events, err := testEventRepo.GetEvents(tc.rid, tc.bound)
 			if tc.expectError {
 				assert.Error(t, err)
 				assert.Nil(t, events)
