@@ -58,8 +58,8 @@ func (er *EventRepository) AddEvent(e *event.Entry) error {
 }
 
 type TimestampBound struct {
-	lower string
-	upper string
+	Lower string
+	Upper string
 }
 
 func (er *EventRepository) GetEvents(rid string, bound TimestampBound) ([]event.Entry, error) {
