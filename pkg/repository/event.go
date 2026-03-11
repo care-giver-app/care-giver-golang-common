@@ -71,15 +71,20 @@ func (er *EventRepository) GetEvents(rid string, bound TimestampBound) ([]event.
 	}
 
 	if bound.Upper != "" && bound.Lower != "" {
-		keyCondition = fmt.Sprintf("%s %s", keyCondition, "AND timestamp BETWEEN :timelower AND :timeupper")
+		keyCondition = fmt.Sprintf("%s %s", keyCondition, "AND #ts BETWEEN :timelower AND :timeupper")
 		expressionAttributeValues[":timelower"] = &types.AttributeValueMemberS{Value: bound.Lower}
 		expressionAttributeValues[":timeupper"] = &types.AttributeValueMemberS{Value: bound.Upper}
+	}
+
+	expressionAttributeNames := map[string]string{
+		"#ts": "timestamp",
 	}
 
 	queryInput := &dynamodb.QueryInput{
 		TableName:                 aws.String(er.TableName),
 		IndexName:                 aws.String("receiver-timestamp"),
 		KeyConditionExpression:    aws.String(keyCondition),
+		ExpressionAttributeNames:  expressionAttributeNames,
 		ExpressionAttributeValues: expressionAttributeValues,
 	}
 
