@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -56,7 +57,12 @@ func (er *EventRepository) AddEvent(e *event.Entry) error {
 	return nil
 }
 
-func (er *EventRepository) GetEvents(rid string) ([]event.Entry, error) {
+type TimestampBound struct {
+	lower string
+	upper string
+}
+
+func (er *EventRepository) GetEvents(rid string, bound TimestampBound) ([]event.Entry, error) {
 	er.logger.Info("retrieving receiver events from db", zap.String(log.ReceiverIDLogKey, string(rid)))
 
 	keyCondition := "receiver_id = :rid"
@@ -64,8 +70,15 @@ func (er *EventRepository) GetEvents(rid string) ([]event.Entry, error) {
 		":rid": &types.AttributeValueMemberS{Value: string(rid)},
 	}
 
+	if bound.upper != "" && bound.lower != "" {
+		keyCondition = fmt.Sprintf("%s %s", keyCondition, "AND timestamp BETWEEN :timelower AND :timeupper")
+		expressionAttributeValues[":timelower"] = &types.AttributeValueMemberS{Value: bound.lower}
+		expressionAttributeValues[":timeupper"] = &types.AttributeValueMemberS{Value: bound.upper}
+	}
+
 	queryInput := &dynamodb.QueryInput{
 		TableName:                 aws.String(er.TableName),
+		IndexName:                 aws.String("receiver-timestamp"),
 		KeyConditionExpression:    aws.String(keyCondition),
 		ExpressionAttributeValues: expressionAttributeValues,
 	}
