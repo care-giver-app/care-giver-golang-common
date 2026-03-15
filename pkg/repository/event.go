@@ -80,11 +80,14 @@ func (er *EventRepository) GetEvents(rid string, bound TimestampBound) ([]event.
 	}
 
 	queryInput := &dynamodb.QueryInput{
-		TableName:                 aws.String(er.TableName),
-		IndexName:                 aws.String("receiver-timestamp"),
-		KeyConditionExpression:    aws.String(keyCondition),
-		ExpressionAttributeNames:  expressionAttributeNames,
-		ExpressionAttributeValues: expressionAttributeValues,
+		TableName:                aws.String(er.TableName),
+		IndexName:                aws.String("receiver-timestamp"),
+		KeyConditionExpression:   aws.String(keyCondition),
+		ExpressionAttributeNames: expressionAttributeNames,
+	}
+
+	if len(expressionAttributeNames) > 0 {
+		queryInput.ExpressionAttributeNames = expressionAttributeNames
 	}
 
 	result, err := er.Client.Query(er.Ctx, queryInput)
