@@ -65,12 +65,19 @@ type TimestampBound struct {
 func (er *EventRepository) GetEvents(rid string, bound TimestampBound) ([]event.Entry, error) {
 	er.logger.Info("retrieving receiver events from db", zap.String(log.ReceiverIDLogKey, string(rid)))
 
-	keyCondition := "receiver_id = :rid"
-	expressionAttributeValues := map[string]types.AttributeValue{
-		":rid": &types.AttributeValueMemberS{Value: string(rid)},
+	if rid == "" {
+		return nil, fmt.Errorf("receiver id is required")
 	}
 
-	expressionAttributeNames := map[string]string{}
+	keyCondition := "#rid = :rid"
+
+	expressionAttributeNames := map[string]string{
+		"#rid": "receiver_id",
+	}
+
+	expressionAttributeValues := map[string]types.AttributeValue{
+		":rid": &types.AttributeValueMemberS{Value: rid},
+	}
 
 	if bound.Upper != "" && bound.Lower != "" {
 		keyCondition = fmt.Sprintf("%s %s", keyCondition, "AND #ts BETWEEN :timelower AND :timeupper")
@@ -84,10 +91,7 @@ func (er *EventRepository) GetEvents(rid string, bound TimestampBound) ([]event.
 		IndexName:                 aws.String("receiver-timestamp"),
 		KeyConditionExpression:    aws.String(keyCondition),
 		ExpressionAttributeValues: expressionAttributeValues,
-	}
-
-	if len(expressionAttributeNames) > 0 {
-		queryInput.ExpressionAttributeNames = expressionAttributeNames
+		ExpressionAttributeNames:  expressionAttributeNames,
 	}
 
 	result, err := er.Client.Query(er.Ctx, queryInput)
