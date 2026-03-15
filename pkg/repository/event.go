@@ -70,14 +70,13 @@ func (er *EventRepository) GetEvents(rid string, bound TimestampBound) ([]event.
 		":rid": &types.AttributeValueMemberS{Value: string(rid)},
 	}
 
+	expressionAttributeNames := map[string]string{}
+
 	if bound.Upper != "" && bound.Lower != "" {
 		keyCondition = fmt.Sprintf("%s %s", keyCondition, "AND #ts BETWEEN :timelower AND :timeupper")
 		expressionAttributeValues[":timelower"] = &types.AttributeValueMemberS{Value: bound.Lower}
 		expressionAttributeValues[":timeupper"] = &types.AttributeValueMemberS{Value: bound.Upper}
-	}
-
-	expressionAttributeNames := map[string]string{
-		"#ts": "timestamp",
+		expressionAttributeNames["#ts"] = "timestamp"
 	}
 
 	queryInput := &dynamodb.QueryInput{
