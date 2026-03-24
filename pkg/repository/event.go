@@ -65,27 +65,33 @@ type TimestampBound struct {
 func (er *EventRepository) GetEvents(rid string, bound TimestampBound) ([]event.Entry, error) {
 	er.logger.Info("retrieving receiver events from db", zap.String(log.ReceiverIDLogKey, string(rid)))
 
-	keyCondition := "receiver_id = :rid"
+	if rid == "" {
+		return nil, fmt.Errorf("receiver id is required")
+	}
+
+	keyCondition := "#rid = :rid"
+
+	expressionAttributeNames := map[string]string{
+		"#rid": "receiver_id",
+	}
+
 	expressionAttributeValues := map[string]types.AttributeValue{
-		":rid": &types.AttributeValueMemberS{Value: string(rid)},
+		":rid": &types.AttributeValueMemberS{Value: rid},
 	}
 
 	if bound.Upper != "" && bound.Lower != "" {
 		keyCondition = fmt.Sprintf("%s %s", keyCondition, "AND #ts BETWEEN :timelower AND :timeupper")
 		expressionAttributeValues[":timelower"] = &types.AttributeValueMemberS{Value: bound.Lower}
 		expressionAttributeValues[":timeupper"] = &types.AttributeValueMemberS{Value: bound.Upper}
-	}
-
-	expressionAttributeNames := map[string]string{
-		"#ts": "timestamp",
+		expressionAttributeNames["#ts"] = "timestamp"
 	}
 
 	queryInput := &dynamodb.QueryInput{
 		TableName:                 aws.String(er.TableName),
 		IndexName:                 aws.String("receiver-timestamp"),
 		KeyConditionExpression:    aws.String(keyCondition),
-		ExpressionAttributeNames:  expressionAttributeNames,
 		ExpressionAttributeValues: expressionAttributeValues,
+		ExpressionAttributeNames:  expressionAttributeNames,
 	}
 
 	result, err := er.Client.Query(er.Ctx, queryInput)
