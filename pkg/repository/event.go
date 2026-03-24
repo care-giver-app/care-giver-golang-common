@@ -15,7 +15,7 @@ import (
 
 type EventRepositoryProvider interface {
 	AddEvent(e *event.Entry) error
-	GetEvents(rid string) ([]event.Entry, error)
+	GetEvents(rid string, bound TimestampBound) ([]event.Entry, error)
 	DeleteEvent(rid, eid string) error
 }
 
