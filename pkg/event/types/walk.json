@@ -1,8 +1,8 @@
 {
-    "type": "walk",
+    "type": "Walking",
     "icon": "assets/walk-icon.png",
     "color": {
-        "primary": "#ff3333",
+        "primary": "#990000",
         "secondary": "#ff6666"
     },
     "data": {
