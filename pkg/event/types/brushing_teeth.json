@@ -1,8 +1,0 @@
-{
-    "type": "Brushing Teeth",
-    "icon": "assets/medication-icon.png",
-    "color": {
-        "primary": "#95727a",
-        "secondary": "#957c72"
-    }
-}
