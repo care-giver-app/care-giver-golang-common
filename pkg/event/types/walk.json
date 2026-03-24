@@ -1,0 +1,16 @@
+{
+    "type": "Walk",
+    "icon": "assets/walk-icon.png",
+    "color": {
+        "primary": "#990000",
+        "secondary": "#ff6666"
+    },
+    "data": {
+        "name": "Duration",
+        "unit": "Mins"
+    },
+    "graph": {
+        "type": "line",
+        "title": "Walk Duration By Time"
+    }
+}
