@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -78,4 +80,60 @@ func (rr *ReceiverRepository) GetReceiver(rid string) (receiver.Receiver, error)
 	}
 
 	return r, nil
+}
+
+func (rr *ReceiverRepository) UpdateReceiver(r receiver.Receiver) error {
+	rr.logger.Info("updating receiver in db", zap.String(log.ReceiverIDLogKey, r.ReceiverID))
+
+	if r.ReceiverID == "" {
+		return fmt.Errorf("receiver id is required")
+	}
+
+	// Marshal the struct to get attribute values, excluding the key
+	av, err := attributevalue.MarshalMap(r)
+	if err != nil {
+		return err
+	}
+
+	// Remove the primary key from the update attributes
+	delete(av, receiverID)
+
+	// If no fields to update, return early
+	if len(av) == 0 {
+		rr.logger.Info("no fields to update")
+		return nil
+	}
+
+	// Build the SET expressions dynamically
+	var setExpressions []string
+	expressionAttributeNames := make(map[string]string)
+	expressionAttributeValues := make(map[string]types.AttributeValue)
+
+	for i, attrName := range av {
+		attrValue := av[i]
+		placeholderName := fmt.Sprintf("#attr%d", i)
+		placeholderValue := fmt.Sprintf(":val%d", i)
+		setExpressions = append(setExpressions, fmt.Sprintf("%s = %s", placeholderName, placeholderValue))
+		expressionAttributeNames[placeholderName] = attrName
+		expressionAttributeValues[placeholderValue] = attrValue
+	}
+
+	updateExpression := "SET " + strings.Join(setExpressions, ", ")
+
+	_, err = rr.Client.UpdateItem(rr.Ctx, &dynamodb.UpdateItemInput{
+		TableName: aws.String(rr.TableName),
+		Key: map[string]types.AttributeValue{
+			receiverID: &types.AttributeValueMemberS{Value: r.ReceiverID},
+		},
+		UpdateExpression:          aws.String(updateExpression),
+		ExpressionAttributeNames:  expressionAttributeNames,
+		ExpressionAttributeValues: expressionAttributeValues,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	rr.logger.Info("successfully updated receiver")
+	return nil
 }
