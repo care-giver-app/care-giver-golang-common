@@ -12,15 +12,14 @@ const (
 )
 
 type Entry struct {
-	EventID     string      `json:"eventId" dynamodbav:"event_id"`
-	ReceiverID  string      `json:"receiverId" dynamodbav:"receiver_id"`
-	UserID      string      `json:"userId" dynamodbav:"user_id"`
-	StartTime   string      `json:"startTime" dynamodbav:"start_time"`
-	EndTime     string      `json:"endTime" dynamodbav:"end_time"`
-	Type        string      `json:"type" dynamodbav:"type"`
-	IsTrackable bool        `json:"isTrackable" dynamodbav:"is_trackable"`
-	Data        []DataPoint `json:"data,omitempty" dynamodbav:"data,omitempty"`
-	Note        string      `json:"note,omitempty" dynamodbav:"note,omitempty"`
+	EventID    string      `json:"eventId" dynamodbav:"event_id"`
+	ReceiverID string      `json:"receiverId" dynamodbav:"receiver_id"`
+	UserID     string      `json:"userId" dynamodbav:"user_id"`
+	StartTime  string      `json:"startTime" dynamodbav:"start_time"`
+	EndTime    string      `json:"endTime" dynamodbav:"end_time"`
+	Type       string      `json:"type" dynamodbav:"type"`
+	Data       []DataPoint `json:"data,omitempty" dynamodbav:"data,omitempty"`
+	Note       string      `json:"note,omitempty" dynamodbav:"note,omitempty"`
 }
 
 type DataPoint struct {

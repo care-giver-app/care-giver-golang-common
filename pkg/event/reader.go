@@ -16,11 +16,12 @@ const (
 var configs embed.FS
 
 type EventConfig struct {
-	Type  string       `json:"type"`
-	Icon  string       `json:"icon"`
-	Color ColorConfig  `json:"color"`
-	Data  *DataConfig  `json:"data,omitempty"`
-	Graph *GraphConfig `json:"graph,omitempty"`
+	Type        string       `json:"type"`
+	Icon        string       `json:"icon"`
+	Color       ColorConfig  `json:"color"`
+	IsTrackable bool         `json:"isTrackable"`
+	Data        *DataConfig  `json:"data,omitempty"`
+	Graph       *GraphConfig `json:"graph,omitempty"`
 }
 
 type ColorConfig struct {
