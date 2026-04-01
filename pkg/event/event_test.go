@@ -20,6 +20,7 @@ func TestNewEntry(t *testing.T) {
 		"Happy Path": {
 			eventType: "Shower",
 			startTime: "2025-06-30T17:25:00-05:00",
+			endTime:   "2025-06-30T17:55:00-05:00",
 			expectedEntry: Entry{
 				Type:      "Shower",
 				StartTime: "2025-06-30T17:25:00-05:00",
@@ -45,6 +46,7 @@ func TestNewEntry(t *testing.T) {
 				},
 			},
 			startTime: "2025-06-30T17:25:00-05:00",
+			endTime:   "2025-06-30T17:55:00-05:00",
 			expectedEntry: Entry{
 				Type:      "Weight",
 				StartTime: "2025-06-30T17:25:00-05:00",
@@ -60,6 +62,7 @@ func TestNewEntry(t *testing.T) {
 		"Happy Path - With Note": {
 			eventType: "Weight",
 			startTime: "2025-06-30T17:25:00-05:00",
+			endTime:   "2025-06-30T17:55:00-05:00",
 			note:      "some note",
 			expectedEntry: Entry{
 				Type:      "Weight",
@@ -83,9 +86,6 @@ func TestNewEntry(t *testing.T) {
 			tc.expectedEntry.UserID = testUID
 
 			opts := []EntryOption{}
-			if tc.endTime != "" {
-				opts = append(opts, WithEndTime(tc.endTime))
-			}
 
 			if len(tc.data) > 0 {
 				opts = append(opts, WithData(tc.data))
@@ -96,7 +96,7 @@ func TestNewEntry(t *testing.T) {
 				opts = append(opts, WithNote(tc.note))
 			}
 
-			entry, err := NewEntry(testRID, testUID, tc.eventType, tc.startTime, opts...)
+			entry, err := NewEntry(testRID, testUID, tc.eventType, tc.startTime, tc.endTime, opts...)
 			if tc.expectErr {
 				assert.Error(t, err)
 				assert.Nil(t, entry)

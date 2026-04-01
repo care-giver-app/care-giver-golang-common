@@ -2,7 +2,6 @@ package event
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -31,12 +30,6 @@ type DataPoint struct {
 
 type EntryOption func(*Entry)
 
-func WithEndTime(endTime string) EntryOption {
-	return func(e *Entry) {
-		e.EndTime = endTime
-	}
-}
-
 func WithData(data []DataPoint) EntryOption {
 	return func(e *Entry) {
 		e.Data = data
@@ -49,25 +42,18 @@ func WithNote(note string) EntryOption {
 	}
 }
 
-func NewEntry(receiverID, userID, eventType, startTime string, opts ...EntryOption) (*Entry, error) {
+func NewEntry(receiverID, userID, eventType, startTime, endTime string, opts ...EntryOption) (*Entry, error) {
 	eventConfig, err := readEventConfig(eventType)
 	if err != nil {
 		return nil, err
 	}
-
-	st, err := time.Parse(time.RFC3339, startTime)
-	if err != nil {
-		return nil, err
-	}
-
-	endTime := st.Add(30 * time.Minute)
 
 	e := &Entry{
 		EventID:    fmt.Sprintf("%s#%s", DBPrefix, uuid.New().String()),
 		ReceiverID: receiverID,
 		UserID:     userID,
 		StartTime:  startTime,
-		EndTime:    endTime.Format(time.RFC3339),
+		EndTime:    endTime,
 		Type:       eventConfig.Type,
 	}
 
