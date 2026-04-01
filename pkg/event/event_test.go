@@ -10,7 +10,8 @@ import (
 func TestNewEntry(t *testing.T) {
 	tests := map[string]struct {
 		eventType     string
-		timestamp     string
+		startTime     string
+		endTime       string
 		data          []DataPoint
 		note          string
 		expectedEntry Entry
@@ -18,16 +19,21 @@ func TestNewEntry(t *testing.T) {
 	}{
 		"Happy Path": {
 			eventType: "Shower",
+			startTime: "2025-06-30T17:25:00-05:00",
 			expectedEntry: Entry{
-				Type: "Shower",
+				Type:      "Shower",
+				StartTime: "2025-06-30T17:25:00-05:00",
+				EndTime:   "2025-06-30T17:55:00-05:00",
 			},
 		},
-		"Happy Path - With Timestamp": {
+		"Happy Path - With End Time": {
 			eventType: "Medication",
-			timestamp: "some time",
+			startTime: "2025-06-30T17:25:00-05:00",
+			endTime:   "2026-06-30T17:55:00-05:00",
 			expectedEntry: Entry{
 				Type:      "Medication",
-				Timestamp: "some time",
+				StartTime: "2025-06-30T17:25:00-05:00",
+				EndTime:   "2026-06-30T17:55:00-05:00",
 			},
 		},
 		"Happy Path - With Data": {
@@ -38,8 +44,11 @@ func TestNewEntry(t *testing.T) {
 					Value: 120.3,
 				},
 			},
+			startTime: "2025-06-30T17:25:00-05:00",
 			expectedEntry: Entry{
-				Type: "Weight",
+				Type:      "Weight",
+				StartTime: "2025-06-30T17:25:00-05:00",
+				EndTime:   "2025-06-30T17:55:00-05:00",
 				Data: []DataPoint{
 					{
 						Name:  "Weight",
@@ -50,10 +59,13 @@ func TestNewEntry(t *testing.T) {
 		},
 		"Happy Path - With Note": {
 			eventType: "Weight",
+			startTime: "2025-06-30T17:25:00-05:00",
 			note:      "some note",
 			expectedEntry: Entry{
-				Type: "Weight",
-				Note: "some note",
+				Type:      "Weight",
+				StartTime: "2025-06-30T17:25:00-05:00",
+				EndTime:   "2025-06-30T17:55:00-05:00",
+				Note:      "some note",
 			},
 		},
 		"Sad Path - Bad Event Type": {
@@ -71,8 +83,8 @@ func TestNewEntry(t *testing.T) {
 			tc.expectedEntry.UserID = testUID
 
 			opts := []EntryOption{}
-			if tc.timestamp != "" {
-				opts = append(opts, WithTimestamp(tc.timestamp))
+			if tc.endTime != "" {
+				opts = append(opts, WithEndTime(tc.endTime))
 			}
 
 			if len(tc.data) > 0 {
@@ -84,15 +96,14 @@ func TestNewEntry(t *testing.T) {
 				opts = append(opts, WithNote(tc.note))
 			}
 
-			entry, err := NewEntry(testRID, testUID, tc.eventType, opts...)
+			entry, err := NewEntry(testRID, testUID, tc.eventType, tc.startTime, opts...)
 			if tc.expectErr {
 				assert.Error(t, err)
 				assert.Nil(t, entry)
 			} else {
 				tc.expectedEntry.EventID = entry.EventID
-				if tc.expectedEntry.Timestamp == "" {
-					tc.expectedEntry.Timestamp = entry.Timestamp
-				}
+				tc.expectedEntry.StartTime = entry.StartTime
+				tc.expectedEntry.EndTime = entry.EndTime
 				assert.Equal(t, tc.expectedEntry, *entry)
 			}
 		})

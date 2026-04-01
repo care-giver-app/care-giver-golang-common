@@ -5,6 +5,7 @@
         "primary": "#27AE60",
         "secondary": "#D4EFDF"
     },
+    "isTrackable": true,
     "data": {
         "name": "Weight",
         "unit": "Lbs"

@@ -4,5 +4,6 @@
     "color": {
         "primary": "#8B4513",
         "secondary": "#BCAAA4"
-    }
+    },
+    "isTrackable": true
 }

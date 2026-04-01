@@ -13,13 +13,15 @@ const (
 )
 
 type Entry struct {
-	EventID    string      `json:"eventId" dynamodbav:"event_id"`
-	ReceiverID string      `json:"receiverId" dynamodbav:"receiver_id"`
-	UserID     string      `json:"userId" dynamodbav:"user_id"`
-	Timestamp  string      `json:"timestamp" dynamodbav:"timestamp"`
-	Type       string      `json:"type" dynamodbav:"type"`
-	Data       []DataPoint `json:"data,omitempty" dynamodbav:"data"`
-	Note       string      `json:"note,omitempty" dynamodbav:"note"`
+	EventID     string      `json:"eventId" dynamodbav:"event_id"`
+	ReceiverID  string      `json:"receiverId" dynamodbav:"receiver_id"`
+	UserID      string      `json:"userId" dynamodbav:"user_id"`
+	StartTime   string      `json:"startTime" dynamodbav:"start_time"`
+	EndTime     string      `json:"endTime" dynamodbav:"end_time"`
+	Type        string      `json:"type" dynamodbav:"type"`
+	IsTrackable bool        `json:"isTrackable" dynamodbav:"is_trackable"`
+	Data        []DataPoint `json:"data,omitempty" dynamodbav:"data,omitempty"`
+	Note        string      `json:"note,omitempty" dynamodbav:"note,omitempty"`
 }
 
 type DataPoint struct {
@@ -29,9 +31,9 @@ type DataPoint struct {
 
 type EntryOption func(*Entry)
 
-func WithTimestamp(timestamp string) EntryOption {
+func WithEndTime(endTime string) EntryOption {
 	return func(e *Entry) {
-		e.Timestamp = timestamp
+		e.EndTime = endTime
 	}
 }
 
@@ -47,17 +49,25 @@ func WithNote(note string) EntryOption {
 	}
 }
 
-func NewEntry(receiverID, userID, eventType string, opts ...EntryOption) (*Entry, error) {
+func NewEntry(receiverID, userID, eventType, startTime string, opts ...EntryOption) (*Entry, error) {
 	eventConfig, err := readEventConfig(eventType)
 	if err != nil {
 		return nil, err
 	}
 
+	st, err := time.Parse(time.RFC3339, startTime)
+	if err != nil {
+		return nil, err
+	}
+
+	endTime := st.Add(30 * time.Minute)
+
 	e := &Entry{
 		EventID:    fmt.Sprintf("%s#%s", DBPrefix, uuid.New().String()),
 		ReceiverID: receiverID,
 		UserID:     userID,
-		Timestamp:  time.Now().UTC().Format(time.RFC3339),
+		StartTime:  startTime,
+		EndTime:    endTime.Format(time.RFC3339),
 		Type:       eventConfig.Type,
 	}
 

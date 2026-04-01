@@ -5,6 +5,7 @@
         "primary": "#990000",
         "secondary": "#ff6666"
     },
+    "isTrackable": true,
     "data": {
         "name": "Duration",
         "unit": "Mins"
