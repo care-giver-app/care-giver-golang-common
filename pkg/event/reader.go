@@ -15,13 +15,22 @@ const (
 //go:embed types/*.json
 var configs embed.FS
 
+type FieldConfig struct {
+	Name        string `json:"name"`
+	Label       string `json:"label"`
+	InputType   string `json:"inputType"`
+	Required    bool   `json:"required"`
+	Placeholder string `json:"placeholder"`
+}
+
 type EventConfig struct {
-	Type        string       `json:"type"`
-	Icon        string       `json:"icon"`
-	Color       ColorConfig  `json:"color"`
-	IsTrackable bool         `json:"isTrackable"`
-	Data        *DataConfig  `json:"data,omitempty"`
-	Graph       *GraphConfig `json:"graph,omitempty"`
+	Type        string        `json:"type"`
+	Icon        string        `json:"icon"`
+	Color       ColorConfig   `json:"color"`
+	IsTrackable bool          `json:"isTrackable"`
+	Data        *DataConfig   `json:"data,omitempty"`
+	Graph       *GraphConfig  `json:"graph,omitempty"`
+	Fields      []FieldConfig `json:"fields,omitempty"`
 }
 
 type ColorConfig struct {

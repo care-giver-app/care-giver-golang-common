@@ -1,0 +1,53 @@
+{
+    "type": "Doctor Appointment",
+    "icon": "assets/appointment-icon.svg",
+    "color": {
+        "primary": "#1565C0",
+        "secondary": "#BBDEFB"
+    },
+    "isTrackable": false,
+    "fields": [
+        {
+            "name": "Doctor",
+            "label": "Doctor / Provider",
+            "inputType": "text",
+            "required": true,
+            "placeholder": "e.g. Dr. Smith"
+        },
+        {
+            "name": "Specialty",
+            "label": "Specialty",
+            "inputType": "text",
+            "required": false,
+            "placeholder": "e.g. Cardiology"
+        },
+        {
+            "name": "Location",
+            "label": "Clinic / Location",
+            "inputType": "text",
+            "required": false,
+            "placeholder": "e.g. Cleveland Clinic"
+        },
+        {
+            "name": "Reason",
+            "label": "Reason for Visit",
+            "inputType": "text",
+            "required": false,
+            "placeholder": "e.g. Annual checkup"
+        },
+        {
+            "name": "Outcome",
+            "label": "Outcome / Summary",
+            "inputType": "textarea",
+            "required": false,
+            "placeholder": "What happened at the appointment?"
+        },
+        {
+            "name": "FollowUp",
+            "label": "Follow-up Date",
+            "inputType": "date",
+            "required": false,
+            "placeholder": ""
+        }
+    ]
+}

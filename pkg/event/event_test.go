@@ -119,6 +119,22 @@ func TestGetAllConfigs(t *testing.T) {
 		"Happy Path": {
 			expectedConfigs: []EventConfig{
 				{
+					Type: "Doctor Appointment",
+					Icon: "assets/appointment-icon.svg",
+					Color: ColorConfig{
+						Primary:   "#1565C0",
+						Secondary: "#BBDEFB",
+					},
+					Fields: []FieldConfig{
+						{Name: "Doctor", Label: "Doctor / Provider", InputType: "text", Required: true, Placeholder: "e.g. Dr. Smith"},
+						{Name: "Specialty", Label: "Specialty", InputType: "text", Required: false, Placeholder: "e.g. Cardiology"},
+						{Name: "Location", Label: "Clinic / Location", InputType: "text", Required: false, Placeholder: "e.g. Cleveland Clinic"},
+						{Name: "Reason", Label: "Reason for Visit", InputType: "text", Required: false, Placeholder: "e.g. Annual checkup"},
+						{Name: "Outcome", Label: "Outcome / Summary", InputType: "textarea", Required: false, Placeholder: "What happened at the appointment?"},
+						{Name: "FollowUp", Label: "Follow-up Date", InputType: "date", Required: false, Placeholder: ""},
+					},
+				},
+				{
 					Type: "Shower",
 					Icon: "assets/shower-icon.png",
 					Color: ColorConfig{
