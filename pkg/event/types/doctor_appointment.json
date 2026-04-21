@@ -5,7 +5,11 @@
         "primary": "#1565C0",
         "secondary": "#BBDEFB"
     },
-    "isTrackable": false,
+    "hasQuickAdd": false,
+    "upcoming": {
+        "show": true,
+        "lookAheadDays": 30
+    },
     "fields": [
         {
             "name": "Doctor",

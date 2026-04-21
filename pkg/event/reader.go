@@ -23,14 +23,32 @@ type FieldConfig struct {
 	Placeholder string `json:"placeholder"`
 }
 
+type AlertThresholds struct {
+	Yellow   int `json:"yellow"`
+	Red      int `json:"red"`
+	Critical int `json:"critical"`
+}
+
+type MonitorConfig struct {
+	AlertThresholds *AlertThresholds `json:"alertThresholds,omitempty"`
+	ShowLastValue   bool             `json:"showLastValue,omitempty"`
+}
+
+type UpcomingConfig struct {
+	Show          bool `json:"show"`
+	LookAheadDays int  `json:"lookAheadDays"`
+}
+
 type EventConfig struct {
-	Type        string        `json:"type"`
-	Icon        string        `json:"icon"`
-	Color       ColorConfig   `json:"color"`
-	IsTrackable bool          `json:"isTrackable"`
-	Data        *DataConfig   `json:"data,omitempty"`
-	Graph       *GraphConfig  `json:"graph,omitempty"`
-	Fields      []FieldConfig `json:"fields,omitempty"`
+	Type        string          `json:"type"`
+	Icon        string          `json:"icon"`
+	Color       ColorConfig     `json:"color"`
+	HasQuickAdd bool            `json:"hasQuickAdd"`
+	Monitor     *MonitorConfig  `json:"monitor,omitempty"`
+	Upcoming    *UpcomingConfig `json:"upcoming,omitempty"`
+	Data        *DataConfig     `json:"data,omitempty"`
+	Graph       *GraphConfig    `json:"graph,omitempty"`
+	Fields      []FieldConfig   `json:"fields,omitempty"`
 }
 
 type ColorConfig struct {
