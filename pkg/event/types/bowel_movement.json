@@ -1,6 +1,6 @@
 {
     "type": "Bowel Movement",
-    "icon": "assets/bowel-movement-icon.png",
+    "icon": "assets/bowel-movement-icon.svg",
     "color": {
         "primary": "#8B4513",
         "secondary": "#BCAAA4"

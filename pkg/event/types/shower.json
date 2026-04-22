@@ -1,6 +1,6 @@
 {
     "type": "Shower",
-    "icon": "assets/shower-icon.png",
+    "icon": "assets/shower-icon.svg",
     "color": {
         "primary": "#1E90FF",
         "secondary": "#D1E8FF"

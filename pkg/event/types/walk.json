@@ -1,6 +1,6 @@
 {
     "type": "Walk",
-    "icon": "assets/walk-icon.png",
+    "icon": "assets/walk-icon.svg",
     "color": {
         "primary": "#990000",
         "secondary": "#ff6666"
