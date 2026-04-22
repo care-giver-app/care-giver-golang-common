@@ -136,7 +136,7 @@ func TestGetAllConfigs(t *testing.T) {
 				},
 				{
 					Type: "Shower",
-					Icon: "assets/shower-icon.png",
+					Icon: "assets/shower-icon.svg",
 					Color: ColorConfig{
 						Primary:   "#3498DB",
 						Secondary: "#D6EAF8",
@@ -144,7 +144,7 @@ func TestGetAllConfigs(t *testing.T) {
 				},
 				{
 					Type: "Weight",
-					Icon: "assets/weight-icon.png",
+					Icon: "assets/weight-icon.svg",
 					Color: ColorConfig{
 						Primary:   "#27AE60",
 						Secondary: "#D4EFDF",
