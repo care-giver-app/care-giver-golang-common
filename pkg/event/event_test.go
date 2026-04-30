@@ -1,7 +1,6 @@
 package event
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -182,4 +181,77 @@ func TestGetAllConfigs(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("alert-mode monitor - Urination", func(t *testing.T) {
+		c, ok := byType["Urination"]
+		assert.True(t, ok)
+		assert.True(t, c.HasQuickAdd)
+		assert.NotNil(t, c.Monitor)
+		assert.NotNil(t, c.Monitor.AlertThresholds)
+		assert.Equal(t, 4, c.Monitor.AlertThresholds.Yellow)
+		assert.Equal(t, 8, c.Monitor.AlertThresholds.Red)
+		assert.Equal(t, 12, c.Monitor.AlertThresholds.Critical)
+		assert.False(t, c.Monitor.ShowLastValue)
+	})
+
+	t.Run("alert-mode monitor - Medication", func(t *testing.T) {
+		c, ok := byType["Medication"]
+		assert.True(t, ok)
+		assert.True(t, c.HasQuickAdd)
+		assert.NotNil(t, c.Monitor)
+		assert.NotNil(t, c.Monitor.AlertThresholds)
+		assert.Equal(t, 6, c.Monitor.AlertThresholds.Yellow)
+		assert.Equal(t, 12, c.Monitor.AlertThresholds.Red)
+		assert.Equal(t, 18, c.Monitor.AlertThresholds.Critical)
+	})
+
+	t.Run("alert-mode monitor - Bowel Movement", func(t *testing.T) {
+		c, ok := byType["Bowel Movement"]
+		assert.True(t, ok)
+		assert.True(t, c.HasQuickAdd)
+		assert.NotNil(t, c.Monitor)
+		assert.NotNil(t, c.Monitor.AlertThresholds)
+		assert.Equal(t, 24, c.Monitor.AlertThresholds.Yellow)
+		assert.Equal(t, 48, c.Monitor.AlertThresholds.Red)
+		assert.Equal(t, 72, c.Monitor.AlertThresholds.Critical)
+	})
+
+	t.Run("alert-mode monitor - Shower", func(t *testing.T) {
+		c, ok := byType["Shower"]
+		assert.True(t, ok)
+		assert.True(t, c.HasQuickAdd)
+		assert.NotNil(t, c.Monitor)
+		assert.NotNil(t, c.Monitor.AlertThresholds)
+		assert.Equal(t, 36, c.Monitor.AlertThresholds.Yellow)
+		assert.Equal(t, 60, c.Monitor.AlertThresholds.Red)
+		assert.Equal(t, 84, c.Monitor.AlertThresholds.Critical)
+	})
+
+	t.Run("last-value monitor - Walk", func(t *testing.T) {
+		c, ok := byType["Walk"]
+		assert.True(t, ok)
+		assert.True(t, c.HasQuickAdd)
+		assert.NotNil(t, c.Monitor)
+		assert.True(t, c.Monitor.ShowLastValue)
+		assert.Nil(t, c.Monitor.AlertThresholds)
+	})
+
+	t.Run("last-value monitor - Weight", func(t *testing.T) {
+		c, ok := byType["Weight"]
+		assert.True(t, ok)
+		assert.True(t, c.HasQuickAdd)
+		assert.NotNil(t, c.Monitor)
+		assert.True(t, c.Monitor.ShowLastValue)
+		assert.Nil(t, c.Monitor.AlertThresholds)
+	})
+
+	t.Run("upcoming - Doctor Appointment", func(t *testing.T) {
+		c, ok := byType["Doctor Appointment"]
+		assert.True(t, ok)
+		assert.False(t, c.HasQuickAdd)
+		assert.Nil(t, c.Monitor)
+		assert.NotNil(t, c.Upcoming)
+		assert.True(t, c.Upcoming.Show)
+		assert.Equal(t, 30, c.Upcoming.LookAheadDays)
+	})
 }
