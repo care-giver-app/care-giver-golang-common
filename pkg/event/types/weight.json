@@ -5,6 +5,10 @@
         "primary": "#27AE60",
         "secondary": "#D4EFDF"
     },
+    "hasQuickAdd": true,
+    "monitor": {
+        "showLastValue": true
+    },
     "data": {
         "name": "Weight",
         "unit": "Lbs"

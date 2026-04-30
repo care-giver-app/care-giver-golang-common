@@ -5,6 +5,10 @@
         "primary": "#990000",
         "secondary": "#ff6666"
     },
+    "hasQuickAdd": true,
+    "monitor": {
+        "showLastValue": true
+    },
     "data": {
         "name": "Duration",
         "unit": "Mins"

@@ -4,5 +4,9 @@
     "color": {
         "primary": "#8B4513",
         "secondary": "#BCAAA4"
+    },
+    "hasQuickAdd": true,
+    "monitor": {
+        "alertThresholds": { "yellow": 24, "red": 48, "critical": 72 }
     }
 }

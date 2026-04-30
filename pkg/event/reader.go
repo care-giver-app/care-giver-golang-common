@@ -15,12 +15,40 @@ const (
 //go:embed types/*.json
 var configs embed.FS
 
+type FieldConfig struct {
+	Name        string `json:"name"`
+	Label       string `json:"label"`
+	InputType   string `json:"inputType"`
+	Required    bool   `json:"required"`
+	Placeholder string `json:"placeholder"`
+}
+
+type AlertThresholds struct {
+	Yellow   int `json:"yellow"`
+	Red      int `json:"red"`
+	Critical int `json:"critical"`
+}
+
+type MonitorConfig struct {
+	AlertThresholds *AlertThresholds `json:"alertThresholds,omitempty"`
+	ShowLastValue   bool             `json:"showLastValue,omitempty"`
+}
+
+type UpcomingConfig struct {
+	Show          bool `json:"show"`
+	LookAheadDays int  `json:"lookAheadDays"`
+}
+
 type EventConfig struct {
-	Type  string       `json:"type"`
-	Icon  string       `json:"icon"`
-	Color ColorConfig  `json:"color"`
-	Data  *DataConfig  `json:"data,omitempty"`
-	Graph *GraphConfig `json:"graph,omitempty"`
+	Type        string          `json:"type"`
+	Icon        string          `json:"icon"`
+	Color       ColorConfig     `json:"color"`
+	HasQuickAdd bool            `json:"hasQuickAdd"`
+	Monitor     *MonitorConfig  `json:"monitor,omitempty"`
+	Upcoming    *UpcomingConfig `json:"upcoming,omitempty"`
+	Data        *DataConfig     `json:"data,omitempty"`
+	Graph       *GraphConfig    `json:"graph,omitempty"`
+	Fields      []FieldConfig   `json:"fields,omitempty"`
 }
 
 type ColorConfig struct {
