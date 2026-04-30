@@ -1,10 +1,24 @@
 package event
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+var byType map[string]EventConfig
+
+func init() {
+	all, err := readConfigs()
+	if err != nil {
+		panic(fmt.Sprintf("failed to load event configs: %v", err))
+	}
+	byType = make(map[string]EventConfig, len(all))
+	for _, c := range all {
+		byType[c.Type] = c
+	}
+}
 
 func TestNewEntry(t *testing.T) {
 	tests := map[string]struct {
