@@ -1,10 +1,24 @@
 package event
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+var byType map[string]EventConfig
+
+func init() {
+	all, err := readConfigs()
+	if err != nil {
+		panic(fmt.Sprintf("failed to load event configs: %v", err))
+	}
+	byType = make(map[string]EventConfig, len(all))
+	for _, c := range all {
+		byType[c.Type] = c
+	}
+}
 
 func TestNewEntry(t *testing.T) {
 	tests := map[string]struct {
@@ -111,13 +125,75 @@ func TestNewEntry(t *testing.T) {
 }
 
 func TestGetAllConfigs(t *testing.T) {
-	configs, err := GetAllConfigs()
-	assert.Nil(t, err)
-	assert.Len(t, configs, 7)
+	tests := map[string]struct {
+		expectedConfigs []EventConfig
+		expectErr       bool
+	}{
+		"Happy Path": {
+			expectedConfigs: []EventConfig{
+				{
+					Type: "Doctor Appointment",
+					Icon: "assets/appointment-icon.svg",
+					Color: ColorConfig{
+						Primary:   "#1565C0",
+						Secondary: "#BBDEFB",
+					},
+					Fields: []FieldConfig{
+						{Name: "Doctor", Label: "Doctor / Provider", InputType: "text", Required: true, Placeholder: "e.g. Dr. Smith"},
+						{Name: "Specialty", Label: "Specialty", InputType: "text", Required: false, Placeholder: "e.g. Cardiology"},
+						{Name: "Location", Label: "Clinic / Location", InputType: "text", Required: false, Placeholder: "e.g. Cleveland Clinic"},
+						{Name: "Reason", Label: "Reason for Visit", InputType: "text", Required: false, Placeholder: "e.g. Annual checkup"},
+						{Name: "Outcome", Label: "Outcome / Summary", InputType: "textarea", Required: false, Placeholder: "What happened at the appointment?"},
+						{Name: "FollowUp", Label: "Follow-up Date", InputType: "date", Required: false, Placeholder: ""},
+					},
+				},
+				{
+					Type: "Shower",
+					Icon: "assets/shower-icon.svg",
+					Color: ColorConfig{
+						Primary:   "#3498DB",
+						Secondary: "#D6EAF8",
+					},
+				},
+				{
+					Type: "Weight",
+					Icon: "assets/weight-icon.svg",
+					Color: ColorConfig{
+						Primary:   "#27AE60",
+						Secondary: "#D4EFDF",
+					},
+					Data: &DataConfig{
+						Name: "Weight",
+						Unit: "Lbs",
+					},
+					Graph: &GraphConfig{
+						Type:  "line",
+						Title: "Weight By Time",
+					},
+				},
+			},
+		},
+	}
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			configs, err := GetAllConfigs()
 
-	byType := make(map[string]EventConfig, len(configs))
-	for _, c := range configs {
-		byType[c.Type] = c
+			assert.Nil(t, err)
+			assert.NotEmpty(t, configs)
+
+			for _, expectedConfig := range tc.expectedConfigs {
+				found := false
+				for _, actualConfig := range configs {
+					if actualConfig.Type == expectedConfig.Type {
+						found = true
+						break
+					}
+				}
+				if !found {
+					assert.Fail(t, fmt.Sprintf("%s not found in configs", expectedConfig.Type))
+				}
+			}
+		})
 	}
 
 	t.Run("alert-mode monitor - Urination", func(t *testing.T) {

@@ -1,6 +1,6 @@
 {
     "type": "Medication",
-    "icon": "assets/medication-icon.png",
+    "icon": "assets/medication-icon.svg",
     "color": {
         "primary": "#9B59B6",
         "secondary": "#E1BEE7"
