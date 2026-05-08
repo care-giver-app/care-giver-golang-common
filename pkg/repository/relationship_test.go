@@ -244,6 +244,88 @@ func TestDeleteRelationship(t *testing.T) {
 	}
 }
 
+func TestGetRelationshipsByReceiver(t *testing.T) {
+	tests := map[string]struct {
+		receiverID    string
+		mockDynamo    *dynamo.Mock
+		expectedValue []relationship.Relationship
+		expectError   bool
+	}{
+		"Happy Path - Multiple CareGivers": {
+			receiverID: "Receiver#123",
+			mockDynamo: &dynamo.Mock{
+				QueryOutput: &dynamodb.QueryOutput{
+					Items: []map[string]types.AttributeValue{
+						{
+							"user_id":             &types.AttributeValueMemberS{Value: "User#123"},
+							"receiver_id":         &types.AttributeValueMemberS{Value: "Receiver#123"},
+							"primary_care_giver":  &types.AttributeValueMemberBOOL{Value: true},
+							"email_notifications": &types.AttributeValueMemberBOOL{Value: false},
+						},
+						{
+							"user_id":             &types.AttributeValueMemberS{Value: "User#456"},
+							"receiver_id":         &types.AttributeValueMemberS{Value: "Receiver#123"},
+							"primary_care_giver":  &types.AttributeValueMemberBOOL{Value: false},
+							"email_notifications": &types.AttributeValueMemberBOOL{Value: false},
+						},
+					},
+				},
+				Err: nil,
+			},
+			expectedValue: []relationship.Relationship{
+				{
+					UserID:             "User#123",
+					ReceiverID:         "Receiver#123",
+					PrimaryCareGiver:   true,
+					EmailNotifications: false,
+				},
+				{
+					UserID:             "User#456",
+					ReceiverID:         "Receiver#123",
+					PrimaryCareGiver:   false,
+					EmailNotifications: false,
+				},
+			},
+		},
+		"Sad Path - Query Error": {
+			receiverID: "Receiver#Error",
+			mockDynamo: &dynamo.Mock{
+				QueryOutput: nil,
+				Err:         errors.New("an error occurred during Query"),
+			},
+			expectError: true,
+		},
+		"Sad Path - Unmarshal Error": {
+			receiverID: "Receiver#Unmarshal",
+			mockDynamo: &dynamo.Mock{
+				QueryOutput: &dynamodb.QueryOutput{
+					Items: []map[string]types.AttributeValue{
+						{
+							"user_id": &types.AttributeValueMemberBOOL{Value: false},
+						},
+					},
+				},
+				Err: nil,
+			},
+			expectError: true,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			repo := NewRelationshipRepository(context.Background(), "relationship-table", tc.mockDynamo, zap.NewNop())
+			r, err := repo.GetRelationshipsByReceiver(tc.receiverID)
+			if tc.expectError {
+				assert.Error(t, err)
+				assert.Nil(t, r)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tc.expectedValue, r)
+			}
+		})
+	}
+}
+
 func TestGetRelationshipsByEmailNotifications(t *testing.T) {
 	tests := map[string]struct {
 		mockDynamo    *dynamo.Mock
