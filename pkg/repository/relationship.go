@@ -16,6 +16,7 @@ type RelationshipRepositoryProvider interface {
 	AddRelationship(r *relationship.Relationship) error
 	GetRelationship(userID string, receiverID string) (*relationship.Relationship, error)
 	GetRelationshipsByUser(userID string) ([]relationship.Relationship, error)
+	GetRelationshipsByReceiver(receiverID string) ([]relationship.Relationship, error)
 	DeleteRelationship(userID string, receiverID string) error
 	GetRelationshipsByEmailNotifications() ([]relationship.Relationship, error)
 }
@@ -93,6 +94,33 @@ func (rr *RelationshipRepository) GetRelationshipsByUser(userID string) ([]relat
 		TableName:                 aws.String(rr.TableName),
 		KeyConditionExpression:    aws.String(keyCondition),
 		ExpressionAttributeValues: expressionAttributeValues,
+	}
+
+	result, err := rr.Client.Query(rr.Ctx, queryInput)
+	if err != nil {
+		return nil, err
+	}
+
+	var relationshipsList []relationship.Relationship
+	err = attributevalue.UnmarshalListOfMaps(result.Items, &relationshipsList)
+	if err != nil {
+		rr.logger.Error("error unmarshalling relationships list", zap.Error(err))
+		return nil, err
+	}
+
+	return relationshipsList, nil
+}
+
+func (rr *RelationshipRepository) GetRelationshipsByReceiver(receiverID string) ([]relationship.Relationship, error) {
+	rr.logger.Info("getting relationships by receiver from db", zap.String(log.ReceiverIDLogKey, receiverID))
+
+	queryInput := &dynamodb.QueryInput{
+		TableName:              aws.String(rr.TableName),
+		IndexName:              aws.String("receiver_id"),
+		KeyConditionExpression: aws.String("receiver_id = :rid"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":rid": &types.AttributeValueMemberS{Value: receiverID},
+		},
 	}
 
 	result, err := rr.Client.Query(rr.Ctx, queryInput)
